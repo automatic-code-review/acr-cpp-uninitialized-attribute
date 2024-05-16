@@ -33,7 +33,7 @@ def ler_linhas_do_arquivo(nome_arquivo, linha_inicio, linha_fim):
             if linhas[i].strip():
                 conteudo_linhas.append(linhas[i])
 
-    return conteudo_linhas
+    return conteudo_linhas, linha_inicio, linha_fim
 
 
 def get_attrs(header_file):
@@ -92,8 +92,8 @@ def get_content(source_file, constructor_name):
 
     objts = sorted(objts, key=lambda x: x['line'])
 
-    end_line = 0
-    start_line = 0
+    end_line = None
+    start_line = None
 
     for index, data_obj in enumerate(objts):
         if constructor_name in data_obj['pattern']:
@@ -106,6 +106,22 @@ def get_content(source_file, constructor_name):
                 end_line = objts[end_line]['line'] - 1
 
             break
+
+    if start_line is None:
+        with open(source_file, 'r') as arquivo:
+            linhas = arquivo.readlines()
+
+            for index, linha in enumerate(linhas):
+                if linha.startswith(constructor_name):
+                    start_line = index + 1
+
+                    for data_obj in objts:
+                        method_start_line = data_obj['line']
+                        if method_start_line > start_line:
+                            end_line = method_start_line - 1
+                            break
+
+                    break
 
     return ler_linhas_do_arquivo(source_file, start_line, end_line)
 
@@ -122,7 +138,7 @@ def review_by_file(header_file, path_root):
     if not os.path.exists(source_file):
         return comments
 
-    content = get_content(source_file, constructor_name)
+    content, linha_inicio, linha_fim = get_content(source_file, constructor_name)
     attrs_not_found = []
 
     for attr in attrs:
@@ -139,7 +155,8 @@ def review_by_file(header_file, path_root):
         attr_to_comment = '<br>'.join(attrs_not_found)
         header_relative = header_file.replace(path_root, "")[1:]
         descr_comment = f'O arquivo `{header_relative}` possui os seguintes atributos sem inicializacao no ' \
-                        f'constructor<br><br>{attr_to_comment}'
+                        f'constructor<br><br>{attr_to_comment}<br><br>Constructor name: {constructor_name}' \
+                        f'<br>Linha inicio: {linha_inicio}<br>Linha fim: {linha_fim}'
 
         comments.append(__create_comment(descr_comment, header_relative))
 
