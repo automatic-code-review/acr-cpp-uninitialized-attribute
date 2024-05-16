@@ -23,6 +23,9 @@ def ler_linhas_do_arquivo(nome_arquivo, linha_inicio, linha_fim):
     with open(nome_arquivo, 'r') as arquivo:
         linhas = arquivo.readlines()
 
+        if linha_fim is None:
+            linha_fim = len(linhas)
+
         indice_inicio = max(0, linha_inicio - 1)
         indice_fim = min(len(linhas), linha_fim)
 
@@ -80,7 +83,12 @@ def get_content(source_file, constructor_name):
         if data_obj == '':
             continue
 
-        objts.append(json.loads(data_obj))
+        obj_json = json.loads(data_obj)
+
+        if 'scope' not in obj_json:
+            continue
+
+        objts.append(obj_json)
 
     objts = sorted(objts, key=lambda x: x['line'])
 
@@ -93,7 +101,7 @@ def get_content(source_file, constructor_name):
             end_line = index + 1
 
             if end_line >= len(objts):
-                end_line = len(objts) - 1
+                end_line = None
             else:
                 end_line = objts[end_line]['line'] - 1
 
