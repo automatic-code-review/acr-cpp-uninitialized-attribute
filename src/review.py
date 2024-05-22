@@ -145,7 +145,7 @@ def review_by_file(header_file, path_root):
         found = False
 
         for myLine in content:
-            if f'{attr}(' in myLine.replace(" ", ""):
+            if f'{attr}' in myLine.replace(" ", ""):
                 found = True
 
         if not found:
