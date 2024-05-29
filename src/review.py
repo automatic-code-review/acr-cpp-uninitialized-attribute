@@ -20,6 +20,10 @@ def review(config):
 
 def ler_linhas_do_arquivo(nome_arquivo, linha_inicio, linha_fim):
     conteudo_linhas = []
+
+    if linha_inicio is None:
+        return conteudo_linhas, 0, 0
+
     with open(nome_arquivo, 'r') as arquivo:
         linhas = arquivo.readlines()
 
