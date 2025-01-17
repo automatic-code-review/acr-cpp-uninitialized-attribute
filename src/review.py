@@ -169,7 +169,7 @@ def review_by_file(header_file, path_root):
 
 def __create_comment(message, path):
     comment = {
-        "id": __generate_md5(path),
+        "id": __generate_md5(f"{path}-{message}"),
         "comment": message.replace("${FILE_PATH}", path),
         "position": {
             "path": path,
