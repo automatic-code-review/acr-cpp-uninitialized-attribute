@@ -60,7 +60,7 @@ def get_attrs(header_file):
         if data_obj['kind'] != 'member':
             continue
 
-        if 'constexpr' in data_obj['pattern'] or 'static' in data_obj['pattern']:
+        if 'constexpr' in data_obj['pattern'] or 'static' in data_obj['pattern'] or "::__anon" in data_obj['scope']:
             continue
 
         if constructor_name is None:
